@@ -1,5 +1,4 @@
 const express = require('express');
-var request = require('request');
 const axios = require('axios');
 var moment = require('moment');
 var fs = require('fs');
@@ -24,89 +23,114 @@ async function start() {
     await builder.build()
   }
 
-  app.get('/api', function(req, res, next) {
+  app.get('/api', function (req, res, next) {
 
-    request({
-        uri: 'https://api-v2.swissunihockey.ch/api/games/',
-        qs: {
-          mode: 'team',
-          team_id: 429603,
-          season: 2017,
-          games_per_page: 35
-        }},
+    axios.get('https://api-v2.swissunihockey.ch/api/games/', {
+      params: {
+        mode: 'team',
+        team_id: 429603,
+        season: 2017,
+        games_per_page: 35
+      }
+    }).then(function (response) {
 
-      function(error, response, body) {
-
-        if (!error && response.statusCode === 200) {
-          var responseBody = {
-            games: []
-          }
-
-          var players = JSON.parse("{\n" +
-            "  \"players\": [\n" +
-            "    \"Abt Simon\",\n" +
-            "    \"Bär Florian\",\n" +
-            "    \"Crivelli Giona\",\n" +
-            "    \"Fiechter Steven\",\n" +
-            "    \"Flütsch Peter\",\n" +
-            "    \"Furger Adrian\",\n" +
-            "    \"Grüter Markus\",\n" +
-            "    \"Hietanen Aki\",\n" +
-            "    \"Koutny Jiri\",\n" +
-            "    \"Laely Marco\",\n" +
-            "    \"Menon Andrea\",\n" +
-            "    \"Grüter Thomas\",\n" +
-            "    \"Müller Matthias\",\n" +
-            "    \"Schelbert Joshua\",\n" +
-            "    \"Nilsson Billy\",\n" +
-            "    \"Nilsson Petter\",\n" +
-            "    \"Poletti Sandro\",\n" +
-            "    \"Schelbert Yannick\",\n" +
-            "    \"Staub Manuel\",\n" +
-            "    \"Suter Tassio\",\n" +
-            "    \"Thunvall Marcus\",\n" +
-            "    \"Uhr Adrian\"\n" +
-            "  ]\n" +
-            "}\n");//fs.readFileSync('./team.json', 'utf8'));
-
-          console.log(JSON.stringify(players));
-          for (var game of JSON.parse(body).data.regions[0].rows) {
-
-            var localGame = {
-              game: null,
-              Players: new Array()
-            }
-
-
-
-            if (game.cells[2].text[0] == 'Zug United' && ( game.cells[0].text[0] == 'heute' || moment(game.cells[0].text[0], 'DD.MM.YYYY') >= moment('26.09.2017', 'DD.MM.YYYY'))) {
-              localGame.game = {
-                date: game.cells[0].text[0],
-                opponent: game.cells[3].text[0],
-                location: game.cells[1].text[0]
-              }
-
-              for (var i = 0; i < 3; i++) {
-                var player = players.players.pop();
-                console.log(JSON.stringify(player));
-                players.players.unshift(player);
-                localGame.Players.push(player);
-              }
-
-
-              responseBody.games.push(localGame);
-
-            }
-          }
-
-
-
-          res.json(responseBody.games);
-        } else {
-          res.json(error);
+        var responseBody = {
+          games: []
         }
 
-      });
+        var players = JSON.parse(fs.readFileSync('server/team.json', 'utf8'));
+
+        //console.log(JSON.stringify(players));
+        //console.log(response.data);
+        //console.log(response.data.data.regions[0].rows[0].cells[2].text[0]);
+        for (let game of response.data.data.regions[0].rows) {
+
+          var localGame = {
+            game: null,
+            Players: new Array()
+          }
+
+        console.log('here i am')
+          if (game.cells[2].text[0] == 'Zug United' && (game.cells[0].text[0] == 'heute' || moment(game.cells[0].text[0], 'DD.MM.YYYY') >= moment('26.09.2017', 'DD.MM.YYYY'))) {
+            localGame.game = {
+              date: game.cells[0].text[0],
+              opponent: game.cells[3].text[0],
+              location: game.cells[1].text[0]
+            }
+
+            for (var i = 0; i < 3; i++) {
+              var player = players.players.pop();
+              console.log(JSON.stringify(player));
+              players.players.unshift(player);
+              localGame.Players.push(player);
+            }
+
+
+            responseBody.games.push(localGame);
+
+          }
+        }
+
+
+        res.json(responseBody.games);
+
+    }).catch(function (err, tst) {
+      console.log(err,tst);
+      console.log('error happend in promise catch')
+    })
+
+
+    /*
+
+    console.log(error, response, body);
+      if (!error && response.statusCode === 200) {
+        var responseBody = {
+          games: []
+        }
+
+        var players = JSON.parse(fs.readFileSync('server/team.json', 'utf8'));
+
+        console.log(JSON.stringify(players));
+        for (var game of JSON.parse(body).data.regions[0].rows) {
+
+          var localGame = {
+            game: null,
+            Players: new Array()
+          }
+
+
+
+          if (game.cells[2].text[0] == 'Zug United' && ( game.cells[0].text[0] == 'heute' || moment(game.cells[0].text[0], 'DD.MM.YYYY') >= moment('26.09.2017', 'DD.MM.YYYY'))) {
+            localGame.game = {
+              date: game.cells[0].text[0],
+              opponent: game.cells[3].text[0],
+              location: game.cells[1].text[0]
+            }
+
+            for (var i = 0; i < 3; i++) {
+              var player = players.players.pop();
+              console.log(JSON.stringify(player));
+              players.players.unshift(player);
+              localGame.Players.push(player);
+            }
+
+
+            responseBody.games.push(localGame);
+
+          }
+        }
+
+
+
+        res.json(responseBody.games);
+      } else {
+        res.json(error);
+      }
+
+
+     */
+
+
   });
 
 // Give nuxt middleware to express
