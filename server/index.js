@@ -12,7 +12,7 @@ const Player = require('./models/player.js')
 
 mongoose.Promise = require('bluebird');
 
-function initialDatabaseSetup(setup) {
+initialDatabaseSetup = (setup) => {
   if (setup) {
     var players = JSON.parse(fs.readFileSync('server/team.json', 'utf8'));
     for (let player of players.players) {
@@ -30,7 +30,10 @@ mongoose.connect('mongodb://localhost/cakeprovider', {
     console.log('connection succesful')
     initialDatabaseSetup(false);
   }
-).catch((err) => console.error(err));
+).catch((err) => {
+    console.error(err)
+  }
+);
 
 app.set('port', port)
 app.use('/player', playerRoutes);
@@ -64,45 +67,45 @@ async function start() {
         games: []
       }
 
-      var players = JSON.parse(fs.readFileSync('server/team.json', 'utf8'));
+      Player.find().then((players) => {
 
-      //console.log(JSON.stringify(players));
-      //console.log(response.data);
-      //console.log(response.data.data.regions[0].rows[0].cells[2].text[0]);
-      for (let game of response.data.data.regions[0].rows) {
 
-        var localGame = {
-          game: null,
-          Players: new Array()
-        }
+        var players = JSON.parse(fs.readFileSync('server/team.json', 'utf8'));
 
-        console.log('here i am')
-        if (game.cells[2].text[0] == 'Zug United' && (game.cells[0].text[0] == 'heute' || moment(game.cells[0].text[0], 'DD.MM.YYYY') >= moment('26.09.2017', 'DD.MM.YYYY'))) {
-          localGame.game = {
-            date: game.cells[0].text[0],
-            opponent: game.cells[3].text[0],
-            location: game.cells[1].text[0]
+        for (let game of response.data.data.regions[0].rows) {
+
+          var localGame = {
+            game: null,
+            Players: new Array()
           }
 
-          for (var i = 0; i < 3; i++) {
-            var player = players.players.pop();
-            console.log(JSON.stringify(player));
-            players.players.unshift(player);
-            localGame.Players.push(player);
+          if (game.cells[2].text[0] == 'Zug United' && (game.cells[0].text[0] == 'heute' || moment(game.cells[0].text[0], 'DD.MM.YYYY') >= moment('26.09.2017', 'DD.MM.YYYY'))) {
+            localGame.game = {
+              date: game.cells[0].text[0],
+              opponent: game.cells[3].text[0],
+              location: game.cells[1].text[0]
+            }
+
+            for (var i = 0; i < 3; i++) {
+              var player = players.players.pop();
+              players.players.unshift(player);
+              localGame.Players.push(player);
+            }
+
+
+            responseBody.games.push(localGame);
+
           }
-
-
-          responseBody.games.push(localGame);
-
         }
-      }
 
 
-      res.json(responseBody.games);
+        res.json(responseBody.games);
 
+      }).catch((err) => {
+        return next(err);
+      });
     }).catch(function (err, tst) {
       console.log(err, tst);
-      console.log('error happend in promise catch')
     })
 
 
