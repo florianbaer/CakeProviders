@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var Player = require('../models/player.js');
+var Player = require('../../models/player.js');
 
 router.get('/', function(req, res, next) {
   Player.find(function (err, products) {

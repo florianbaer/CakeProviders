@@ -23,7 +23,7 @@
     },
     methods: {
       GetApiData: function() {
-        axios.get('/api')
+        axios.get('/api/cakelist')
           .then((response) => {
             this.games = response.data;
           }).catch((error) => {
