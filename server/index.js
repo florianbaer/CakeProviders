@@ -2,13 +2,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 const {Nuxt, Builder} = require('nuxt')
 const app = express()
+const passport = require('passport');
+const cors = require('cors')
+const fs = require('fs');
 const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
 const playerRoutes = require('./routes/api/player.js')
 const Player = require('./models/player.js')
 
 
-connectToDatabase = () =>{
+connectToDatabase = () => {
   mongoose.connect('mongodb://localhost/cakeprovider', {
     promiseLibrary: require('bluebird')
   }).then(() => {
@@ -27,19 +30,25 @@ initialDatabaseSetup = (setup) => {
     var players = JSON.parse(fs.readFileSync('server/team.json', 'utf8'));
     for (let player of players.players) {
       new Player({
-        lastname: player.split(' ')[0],
-        firstname: player.split(' ')[1]
+        name: {
+          last: player.split(' ')[0],
+          first: player.split(' ')[1]
+        }
       }).save();
     }
   }
-}
+};
+
+//initialDatabaseSetup(true);
 
 
 mongoose.Promise = require('bluebird');
 
 
 app.use(require('morgan')('dev'));
+app.use(cors());
 
+require('./config/passport');
 connectToDatabase();
 
 app.use(require('./routes'));

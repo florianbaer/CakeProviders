@@ -1,7 +1,6 @@
 var express = require('express');
 const axios = require('axios');
 var moment = require('moment');
-var fs = require('fs');
 var router = express.Router();
 var Player = require('../../models/player.js');
 
@@ -12,7 +11,7 @@ router.get('/', function (req, res, next) {
     params: {
       mode: 'team',
       team_id: 429603,
-      season: 2017,
+      season: 2018,
       games_per_page: 35
     }
   }).then(function (response) {
@@ -21,10 +20,7 @@ router.get('/', function (req, res, next) {
       games: []
     }
 
-    Player.find().then((players) => {
-
-
-      var players = JSON.parse(fs.readFileSync('server/team.json', 'utf8'));
+    Player.find({}).then((players) => {
 
       for (let game of response.data.data.regions[0].rows) {
 
@@ -33,22 +29,18 @@ router.get('/', function (req, res, next) {
           Players: new Array()
         }
 
-        if (game.cells[2].text[0] == 'Zug United' && (game.cells[0].text[0] == 'heute' || moment(game.cells[0].text[0], 'DD.MM.YYYY') >= moment('26.09.2017', 'DD.MM.YYYY'))) {
+        if (game.cells[2].text[0] == 'Zug United'/* && (game.cells[0].text[0] == 'heute' || moment(game.cells[0].text[0], 'DD.MM.YYYY') >= moment('26.09.2017', 'DD.MM.YYYY'))*/) {
           localGame.game = {
             date: game.cells[0].text[0],
             opponent: game.cells[3].text[0],
             location: game.cells[1].text[0]
           }
-
           for (var i = 0; i < 3; i++) {
-            var player = players.players.pop();
-            players.players.unshift(player);
-            localGame.Players.push(player);
+            var player = players.pop();
+            players.unshift(player);
+            localGame.Players.push(player.fullname);
           }
-
-
           responseBody.games.push(localGame);
-
         }
       }
 
@@ -62,7 +54,6 @@ router.get('/', function (req, res, next) {
     console.log(err, tst);
   })
 });
-
 
 
 module.exports = router;

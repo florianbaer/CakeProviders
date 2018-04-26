@@ -1,8 +1,19 @@
 var mongoose = require('mongoose');
 
 var playerSchema = new mongoose.Schema({
-  firstname: {type: String, required: [true, "can't be blank"]},
-  lastname: {type: String, required: [true, "can't be blank"]}
+    name: {
+      first: {type: String, required: [true, "can't be blank"]},
+      last: {type: String, required: [true, "can't be blank"]}
+    }
+  },
+  {
+    toObject: {
+      virtuals: true
+    }
+  });
+
+playerSchema.virtual('fullname').get(function () {
+  return this.name.first + ' ' + this.name.last;
 });
 
 module.exports = mongoose.model('Player', playerSchema);
