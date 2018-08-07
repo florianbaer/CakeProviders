@@ -5,12 +5,12 @@ var router = express.Router();
 var Player = require('../../models/player.js');
 
 
-router.get('/', function (req, res, next) {
+router.get('/:teamId', function (req, res, next) {
 
   axios.get('https://api-v2.swissunihockey.ch/api/games/', {
     params: {
       mode: 'team',
-      team_id: 429603,
+      team_id: req.params.teamId,
       season: 2018,
       games_per_page: 35
     }
@@ -20,7 +20,7 @@ router.get('/', function (req, res, next) {
       games: []
     }
 
-    Player.find({}).then((players) => {
+    Player.find({teamId: req.params.teamId}).then((players) => {
 
       for (let game of response.data.data.regions[0].rows) {
 

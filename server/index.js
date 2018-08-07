@@ -7,7 +7,6 @@ const cors = require('cors')
 const fs = require('fs');
 const host = process.env.HOST || '127.0.0.1'
 const port = process.env.PORT || 3000
-const playerRoutes = require('./routes/api/player.js')
 const Player = require('./models/player.js')
 
 
@@ -25,22 +24,24 @@ connectToDatabase = () => {
 }
 
 
-initialDatabaseSetup = (setup) => {
+initialDatabaseSetup = (setup, teamId) => {
   if (setup) {
-    var players = JSON.parse(fs.readFileSync('server/team.json', 'utf8'));
+    var players = JSON.parse(fs.readFileSync(`server/${teamId}.json`, 'utf8'));
     for (let player of players.players) {
       new Player({
         name: {
           last: player.split(' ')[0],
           first: player.split(' ')[1]
-        }
-      }).save();
+        },
+        teamId: teamId
+      }).save().catch(e => console.log(e));
     }
   }
 };
 
-//initialDatabaseSetup(true);
-
+/*initialDatabaseSetup(true, 429603);
+initialDatabaseSetup(true, 429578);
+*/
 
 mongoose.Promise = require('bluebird');
 

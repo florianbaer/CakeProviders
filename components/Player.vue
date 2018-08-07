@@ -1,9 +1,9 @@
 <template>
-  <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+  <div class="list-group-item list-group-item-action flex-column align-items-start player">
     <div class="d-flex col-md-8 justify-content-between">
       <h5 class="mb-1">{{this.player}}</h5>
     </div>
-  </a>
+  </div>
 </template>
 
 <script>
@@ -26,7 +26,7 @@ h1, h2 {
   font-weight: normal;
 }
 
-a {
+.player {
   color: #42b983;
 }
 </style>

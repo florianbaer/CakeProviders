@@ -8,30 +8,48 @@
       <div class="col-md-3">
         <small>{{game.game.date}}</small>
       </div>
-      <p class="mb-1">{{game.game.location}}</p>
+      </div><div class="row">
+      <p class="col-md-12 mb-1">{{game.game.location}}</p>
       </div>
+      <a :href="encodedText">Mitteilen</a>
     </a>
-        <player :key="item"  v-for="item of this.game.Players" :player="item"></player>
+    <player :key="item"  v-for="item of this.game.Players" :player="item"></player>
+
+
 
 </div>
+
+
 </template>
 
 <script>
-import Player from './Player'
+import Player from "./Player";
 export default {
-  name: 'Game',
+  name: "Game",
   props: {
     game: Object
   },
+  computed: {
+    encodedText: function() {
+      return (
+        "https://wa.me/?text=" +
+        encodeURI(
+          `Kuchen für das Spiel am  ${this.game.game.date} in ${
+            this.game.game.location
+          } müssen bringen:\n${this.game.Players.join("\n")}`
+        )
+      );
+    }
+  },
   data() {
     return {
-      msg: 'Welcome to Your Vue.js App'
-    }
+      msg: "Welcome to Your Vue.js App"
+    };
   },
   components: {
     Player
   }
-}
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -42,10 +60,10 @@ h2 {
 }
 
 a {
-  color: #42b983;
+  color: white;
 }
 
-.margin-bottom-list{
+.margin-bottom-list {
   margin-bottom: 20px;
 }
 </style>

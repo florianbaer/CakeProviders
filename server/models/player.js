@@ -4,7 +4,8 @@ var playerSchema = new mongoose.Schema({
     name: {
       first: {type: String, required: [true, "can't be blank"]},
       last: {type: String, required: [true, "can't be blank"]}
-    }
+    },
+    teamId: {type: Number, required: [true, "can't be blank"]}
   },
   {
     toObject: {
