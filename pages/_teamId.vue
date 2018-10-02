@@ -1,20 +1,21 @@
-<template><div>
-  <div id="app" class="container" v-if="this.$route.params.teamId">
-    <div class="row">
-      <game :key="item.game.opponent" v-for="item of this.games" :game="item"></game>
-    </div>
-    
-  </div>
-  <div class="container">
-    <div class="list-group col-md-4 margin-bottom-list" v-if="!this.$route.params.teamId">
-      <a href="/429603">Herren</a>
+<template>
+  <div>
+    <div id="app" class="container" v-if="this.$route.params.teamId">
+      <div class="row">
+        <game :key="item.game.opponent" v-for="item of this.games" :game="item"></game>
       </div>
-      <div class="list-group col-md-4 margin-bottom-list" v-if="!this.$route.params.teamId">
-        <a href="/429578">Damen</a>
-      </div> 
+    </div>
+    <div class="container center">
+      <div class='row'>
+        <div class="col-md-5 box offset-md-1" v-if="!this.$route.params.teamId">
+          <a href="/429603">Herren</a>
+        </div>
+        <div class="col-md-5 box offset-md-1" v-if="!this.$route.params.teamId">
+          <a href="/429578">Damen</a>
+        </div>
+      </div>
     </div>
   </div>
-  
 </template>
 
 <script>
@@ -30,7 +31,7 @@ export default {
     };
   },
   mounted() {
-    if(this.$route.params.teamId){
+    if (this.$route.params.teamId) {
       this.GetApiData(this.$route.params.teamId);
     }
   },
@@ -60,5 +61,19 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+.center {
+  margin-top: 100px;
+}
+
+.box {
+  text-align: center;
+  border: 20px solid #42b983;
+  border-width: 20px;
+  border-style: solid;
+  border-color: #42b983;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 </style>
