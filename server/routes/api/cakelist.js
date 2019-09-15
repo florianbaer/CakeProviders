@@ -19,9 +19,9 @@ router.get('/:teamId', function (req, res, next) {
     var responseBody = {
       games: []
     }
-
-    Player.find({teamId: req.params.teamId}).then((players) => {
-
+    var mysort = {first: 1};
+    Player.find({teamId: req.params.teamId}).sort(mysort).then((players) => {
+      console.log(players)
       for (let game of response.data.data.regions[0].rows) {
 
         var localGame = {
@@ -35,9 +35,10 @@ router.get('/:teamId', function (req, res, next) {
             opponent: game.cells[3].text[0],
             location: game.cells[1].text[0]
           }
-          for (var i = 0; i < 3; i++) {
+          for (var i = 1; i < 3; i++) {
             var player = players.pop();
             players.unshift(player);
+            console.log(player)
             localGame.Players.push(player.fullname);
           }
           responseBody.games.push(localGame);

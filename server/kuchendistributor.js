@@ -14,7 +14,7 @@ axios.get('https://api-v2.swissunihockey.ch/api/games/?mode=team&team_id=429603&
 
                 var playerPerGame = new Array();
 
-                for(var i = 0;i < 3; i++){
+                for(var i = 0;i < 2; i++){
                     var player = spieler.pop();
                     spieler.unshift(player);
                     playerPerGame.push(player);
