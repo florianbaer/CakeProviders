@@ -38,10 +38,10 @@ initialDatabaseSetup = (setup, teamId) => {
     }
   }
 };
-/*
-initialDatabaseSetup(true, 429603);
-initialDatabaseSetup(true, 429578);
-*/
+
+
+//initialDatabaseSetup(true, 429578);
+
 
 mongoose.Promise = require('bluebird');
 

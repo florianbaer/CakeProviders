@@ -4,7 +4,7 @@ var moment = require('moment')
 
 var spieler = fs.readFileSync('Team.txt').toString().split("\n");
 
-axios.get('https://api-v2.swissunihockey.ch/api/games/?mode=team&team_id=429603&season=2017&games_per_page=30')
+axios.get('https://api-v2.swissunihockey.ch/api/games/?mode=team&team_id=429603&season=2019&games_per_page=30')
     .then(function (response) {
         var games = response;
 

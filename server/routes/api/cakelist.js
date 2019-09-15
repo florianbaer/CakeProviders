@@ -11,7 +11,7 @@ router.get('/:teamId', function (req, res, next) {
     params: {
       mode: 'team',
       team_id: req.params.teamId,
-      season: 2018,
+      season: 2019,
       games_per_page: 35
     }
   }).then(function (response) {
